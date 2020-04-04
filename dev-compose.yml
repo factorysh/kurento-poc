@@ -4,23 +4,23 @@ version: "3"
 services:
   kms:
     image: kurento/kurento-media-server:6.13
-    network_mode: host
     environment:
       KMS_EXTERNAL_ADDRESS: "${PUBLIC_IP}"
-      KMS_STUN_IP: "${PUBLIC_IP}"
+      KMS_STUN_IP: "${STUN_IP}"
       KMS_STUN_PORT: "3478"
       KMS_TURN_URL: "${TURN_URL}"
       KMS_MIN_PORT: 50000
       KMS_MAX_PORT: 50200
-      KMS_NETWORK_INTERFACES: lo
     labels:
       traefik.ws.port: "8888"
       traefik.ws.frontend.rule: Host:${DOMAIN};Path:/kurento;Headers:Upgrade,websocket
     volumes:
       - ./etc/BaseRtpEndpoint.conf.ini:/etc/kurento/modules/kurento/BaseRtpEndpoint.conf.ini
+    ports:
+        - "10.68.16.61:50000-50200:50000-50200"
   web:
     image: bearstech/nginx
     volumes:
-      - ./mirror:/var/www/html
+      - ./hello-world:/var/www/html
     labels:
       traefik.frontend.rule: Host:${DOMAIN}
